@@ -71,6 +71,10 @@
     <EmbeddedResource Include="SplashScreen.wpk" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\images\Blocks.png" />
+    <Content Include="Content\images\Ground1.png" />
+    <Content Include="Content\images\jungleSky.png" />
+    <Content Include="Content\images\TreeBackground2.png" />
     <Content Include="Content\TiledTest.tmx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
