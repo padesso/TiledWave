@@ -55,7 +55,6 @@
     <Compile Include="Game.cs" />
     <Compile Include="Helpers\EllipsePolygonCreator.cs" />
     <Compile Include="MyScene.cs" />
-    <Compile Include="TiledWave\TiledWaveImageLayer.cs" />
     <Compile Include="TiledWave\TiledWaveObjectEntity.cs" />
     <Compile Include="TiledWave\TmxMapRenderer.cs" />
   </ItemGroup>
