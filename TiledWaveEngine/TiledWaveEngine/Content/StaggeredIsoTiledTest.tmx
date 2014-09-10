@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="staggered" width="20" height="20" tilewidth="64" tileheight="32">
+ <tileset firstgid="1" name="isometric_grass_and_water" tilewidth="64" tileheight="64">
+  <image source="images/isometric_grass_and_water.png" width="256" height="384"/>
+ </tileset>
+ <tileset firstgid="25" name="iso_tileset" tilewidth="64" tileheight="64">
+  <tileoffset x="0" y="32"/>
+  <image source="images/iso_tileset.png" width="640" height="1024"/>
+ </tileset>
+ <layer name="Tile Layer 1" width="20" height="20">
+  <data encoding="base64" compression="zlib">
+   eJxjZGBgYBzFNMOsVDRLBIgFqWyeOJXMhJkFwmxUMI8DyTwhKpgnTEWzkM2kpnnsVDRrFI9iemAAzE8C2w==
+  </data>
+ </layer>
+ <layer name="Tile Layer 2" width="20" height="20">
+  <data encoding="base64" compression="zlib">
+   eJxjYBgawAWIralkliPULCcqmWcBNY9a7gOZ5wzEllQyDwS8oXi4gIlUMGMyFcygBphEBzOn0sCOuTQwcxQMLQAAUesGsA==
+  </data>
+ </layer>
+</map>

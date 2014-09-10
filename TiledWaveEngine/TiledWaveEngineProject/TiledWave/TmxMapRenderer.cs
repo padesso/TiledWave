@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TiledSharp;
+using WaveEngine.Common.Graphics;
 using WaveEngine.Common.Math;
 using WaveEngine.Components.Graphics2D;
 using WaveEngine.Framework;
@@ -26,6 +27,7 @@ namespace TiledWaveEngineProject.TiledWave
             _entityManager = entityManager;
         }
 
+        //TODO: respect the overall layer order
         public void Render()
         {
             #region Object Layers
@@ -34,14 +36,7 @@ namespace TiledWaveEngineProject.TiledWave
             {
                 for (int objectIndex = _map.ObjectGroups[objectGroupIndex].Objects.Count - 1; objectIndex >= 0; objectIndex--)
                 {
-
                     TmxObjectGroup.TmxObject _tiledObject = _map.ObjectGroups[objectGroupIndex].Objects[objectIndex];
-
-                    //Add the tiled objects sans the tiles
-                    Entity tiledWaveObjEntity = new Entity()
-                        .AddComponent(new TiledWaveObjectEntity(_map, _tiledObject));
-
-                    _entityManager.Add(tiledWaveObjEntity);
 
                     //Add the tiles
                     if (_tiledObject.ObjectType == TmxObjectGroup.TmxObjectType.Tile)
@@ -76,7 +71,7 @@ namespace TiledWaveEngineProject.TiledWave
                                 Y = _tiledObject.Tile.Y - tileSet.TileHeight
                             };
 
-                            //Create the renerable entity
+                            //Create the renderable entity
                             var currentEntity = new Entity()
                                 .AddComponent(tileSetSprite)
                                 .AddComponent(new RectangleCollider() //adding collision allows for off-screen culling as well
@@ -87,8 +82,16 @@ namespace TiledWaveEngineProject.TiledWave
                                 .AddComponent(rectTransform);
 
                             _entityManager.Add(currentEntity);
-                        }
-                    } 
+                        }                        
+                    }
+                    else
+                    {
+                        //Add the tiled objects except for the tiles
+                        Entity tiledWaveObjEntity = new Entity()
+                            .AddComponent(new TiledWaveObjectEntity(_map, _tiledObject));
+
+                        _entityManager.Add(tiledWaveObjEntity);
+                    }
                 }
             }
 
@@ -101,49 +104,22 @@ namespace TiledWaveEngineProject.TiledWave
             {
                 //Loop through the tiles and add them to the entity manager to be rendered
                 for (int tileIndex = 0; tileIndex < _map.Layers[layerIndex].Tiles.Count; tileIndex++)
-                {
-                    for (int tileSetIndex = 0; tileSetIndex < _map.Tilesets.Count; tileSetIndex++)
-                    {
-                        TmxTileset tileSet = _map.Tilesets[tileSetIndex];
+                {   
+                    //Get the clipped sprite from the tile sets
+                    Sprite tileSetSprite = GetClippedSprite(layerIndex, tileIndex);
+                    if (tileSetSprite == null)
+                        continue;
 
-                        int numXTiles = (int)tileSet.Image.Width / tileSet.TileWidth;
-                        int numYTiles = (int)tileSet.Image.Height / tileSet.TileHeight;
+                    //Create an entity to render at the proper location
+                    Entity tileEntity = GetTileEntity(layerIndex, tileIndex);
+                    if (tileEntity == null)
+                        continue;
 
-                        //Get the tile to draw
-                        TmxLayerTile currentTile = _map.Layers[layerIndex].Tiles[tileIndex];
-                        int currentTileID = currentTile.Gid;
+                    //Add the clipped sprite to the entity
+                    tileEntity.AddComponent(tileSetSprite);
 
-                        //if there's nothing to draw in this tile or our rect is in a later tileset, then skip the loop
-                        if (currentTileID <= 0 || currentTileID > (tileSet.FirstGid + numXTiles * numYTiles))
-                            continue;
-
-                        //Determine where to crop the texture compensating for FirstGid of each tileSet                        
-                        int rectangleX = (currentTileID - tileSet.FirstGid) % numYTiles * tileSet.TileWidth;
-                        int rectangleY = ((currentTileID - tileSet.FirstGid) - ((currentTileID - tileSet.FirstGid) % numYTiles)) / numYTiles * tileSet.TileHeight;
-
-                        //Get the cropped sprite for this tile
-                        Sprite tileSetSprite = new Sprite(tileSet.Image.Source);
-                        tileSetSprite.SourceRectangle = new Rectangle(rectangleX, rectangleY, tileSet.TileWidth, tileSet.TileHeight);
-
-                        //Used for both position and collision
-                        Transform2D rectTransform = new Transform2D()
-                        {
-                            X = _map.Layers[layerIndex].Tiles[tileIndex].X * tileSet.TileWidth,
-                            Y = _map.Layers[layerIndex].Tiles[tileIndex].Y * tileSet.TileHeight
-                        };
-
-                        //Create the renerable entity
-                        var currentEntity = new Entity()
-                            .AddComponent(tileSetSprite)
-                            .AddComponent(new RectangleCollider() //adding collision allows for off-screen culling as well
-                            {
-                                Transform2D = rectTransform
-                            })
-                            .AddComponent(new SpriteRenderer(DefaultLayers.Alpha))
-                            .AddComponent(rectTransform);
-
-                        _entityManager.Add(currentEntity);
-                    }
+                    //Add the entity to the scene
+                    _entityManager.Add(tileEntity);               
                 }
             }
 
@@ -167,5 +143,89 @@ namespace TiledWaveEngineProject.TiledWave
 
             #endregion
         }
+
+        #region Helpers
+
+        private Sprite GetClippedSprite(int LayerIndex, int TileIndex)
+        {
+            for (int tileSetIndex = 0; tileSetIndex < _map.Tilesets.Count; tileSetIndex++)
+            {
+                TmxTileset tileSet = _map.Tilesets[tileSetIndex];
+
+                //Get the tile to draw
+                TmxLayerTile currentTile = _map.Layers[LayerIndex].Tiles[TileIndex];
+                int currentTileGID = currentTile.Gid;
+
+                int numXTiles = (int)tileSet.Image.Width / tileSet.TileWidth;
+                int numYTiles = (int)tileSet.Image.Height / tileSet.TileHeight;
+
+                //if there's nothing to draw in this tile or our rect is in a later tileset, then skip the loop
+                if (currentTileGID <= 0 || currentTileGID > (tileSet.FirstGid + numXTiles * numYTiles))
+                    continue;
+
+                //Determine where to crop the texture compensating for FirstGid of each tileSet                        
+                int rectangleX = (currentTileGID - tileSet.FirstGid) % numYTiles * tileSet.TileWidth;
+                int rectangleY = ((currentTileGID - tileSet.FirstGid) - ((currentTileGID - tileSet.FirstGid) % numYTiles)) / numYTiles * tileSet.TileHeight;
+
+                //Get the cropped sprite for this tile
+                Sprite tileSetSprite = new Sprite(tileSet.Image.Source);
+                tileSetSprite.SourceRectangle = new Rectangle(rectangleX, rectangleY, tileSet.TileWidth, tileSet.TileHeight);
+
+                return tileSetSprite;
+            }
+
+            return null;
+        }
+
+        
+        private Entity GetTileEntity(int LayerIndex, int TileIndex)
+        {
+            Transform2D rectTransform = new Transform2D();
+
+            //TODO: handle ortho, iso and staggered
+            if (_map.Orientation == TmxMap.OrientationType.Orthogonal)
+            {
+                rectTransform = new Transform2D()
+                {
+                    X = _map.Layers[LayerIndex].Tiles[TileIndex].X * _map.TileWidth,
+                    Y = _map.Layers[LayerIndex].Tiles[TileIndex].Y * _map.TileHeight
+                };    
+            }
+            else if (_map.Orientation == TmxMap.OrientationType.Isometric)
+            {
+                //TODO: transform this from top moving down and right
+                rectTransform = new Transform2D()
+                {
+                    X = _map.Layers[LayerIndex].Tiles[TileIndex].X * _map.TileWidth,
+                    Y = _map.Layers[LayerIndex].Tiles[TileIndex].Y * _map.TileHeight
+                }; 
+            }
+            else if (_map.Orientation == TmxMap.OrientationType.Staggered)
+            {
+                //TODO: transform this from top moving down and right, then back left
+                rectTransform = new Transform2D()
+                {
+                    X = _map.Layers[LayerIndex].Tiles[TileIndex].X * _map.TileWidth,
+                    Y = _map.Layers[LayerIndex].Tiles[TileIndex].Y * _map.TileHeight
+                }; 
+            }
+            else
+            {
+                //How did we get here?
+                throw new NotImplementedException();
+            }
+
+            //Create the renerable entity
+            Entity currentEntity = new Entity()
+                .AddComponent(new RectangleCollider() //adding collision allows for off-screen culling as well
+                {
+                    Transform2D = rectTransform
+                })
+                .AddComponent(new SpriteRenderer(DefaultLayers.Alpha))
+                .AddComponent(rectTransform);
+
+            return currentEntity;
+        }
+        #endregion
     }
 }

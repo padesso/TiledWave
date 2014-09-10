@@ -1,7 +1,6 @@
 #region Using Statements
 using System;
 using TiledSharp;
-using NTiled;
 using WaveEngine.Common;
 using WaveEngine.Common.Graphics;
 using WaveEngine.Framework;
@@ -12,6 +11,7 @@ using WaveEngine.Common.Math;
 using System.Collections.Generic;
 using WaveEngine.Framework.Physics2D;
 using TiledWaveEngineProject.TiledWave;
+using TiledWaveEngineProject.dbrCamera;
 #endregion
 
 namespace TiledWaveEngineProject
@@ -22,8 +22,22 @@ namespace TiledWaveEngineProject
         {
             RenderManager.BackgroundColor = Color.CornflowerBlue;
 
-            TmxMapRenderer tmxMapRenderer = new TmxMapRenderer(@".\Content\TiledTest.tmx", EntityManager);
+            //TODO: get camera and picking working
+            //Entity orthogonalCamera = new Entity("orthogonal")
+            //                            .AddComponent(new Camera()
+            //                            {
+            //                                Position = new Vector3(0, 0f, 0f),
+            //                                LookAt = new Vector3(0, 55f, 55f),
+            //                            })
+            //                            .AddComponent(new CameraBehavior());
+
+            //RenderManager.SetActiveCamera(orthogonalCamera);
+            //EntityManager.Add(orthogonalCamera); 
+
+            TmxMapRenderer tmxMapRenderer = new TmxMapRenderer(@".\Content\IsoTiledTest.tmx", EntityManager);
             tmxMapRenderer.Render();
+
+
         }
     }
 }

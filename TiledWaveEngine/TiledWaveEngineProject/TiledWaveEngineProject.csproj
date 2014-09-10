@@ -33,9 +33,6 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="NTiled">
-      <HintPath>..\..\packages\NTiled.0.1.6\lib\net45\NTiled.dll</HintPath>
-    </Reference>
     <Reference Include="TiledSharp">
       <HintPath>..\..\..\..\..\..\Source\Repos\TiledSharp\TiledSharp\bin\Debug\TiledSharp.dll</HintPath>
     </Reference>
@@ -52,6 +49,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="dbrCamera\CamerBehavior.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="Helpers\EllipsePolygonCreator.cs" />
     <Compile Include="MyScene.cs" />
@@ -59,7 +57,7 @@
     <Compile Include="TiledWave\TmxMapRenderer.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <Folder Include="Lighting\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
