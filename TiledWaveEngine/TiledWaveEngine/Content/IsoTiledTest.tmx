@@ -8,4 +8,8 @@
    eJxjZGBgYBzFIw6zAjEvEmaj0DwRIBZHwkLD3DwOIBZGwuyDIE5H8SimNwYAyaYDMw==
   </data>
  </layer>
+ <objectgroup name="Object Layer 1" width="20" height="20">
+  <object x="78" y="257" width="377" height="152"/>
+  <object x="221" y="88" width="73" height="117"/>
+ </objectgroup>
 </map>

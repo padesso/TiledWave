@@ -22,22 +22,8 @@ namespace TiledWaveEngineProject
         {
             RenderManager.BackgroundColor = Color.CornflowerBlue;
 
-            //TODO: get camera and picking working
-            //Entity orthogonalCamera = new Entity("orthogonal")
-            //                            .AddComponent(new Camera()
-            //                            {
-            //                                Position = new Vector3(0, 0f, 0f),
-            //                                LookAt = new Vector3(0, 55f, 55f),
-            //                            })
-            //                            .AddComponent(new CameraBehavior());
-
-            //RenderManager.SetActiveCamera(orthogonalCamera);
-            //EntityManager.Add(orthogonalCamera); 
-
-            TmxMapRenderer tmxMapRenderer = new TmxMapRenderer(@".\Content\IsoTiledTest.tmx", EntityManager);
+            TmxMapRenderer tmxMapRenderer = new TmxMapRenderer(@".\Content\StaggeredIsoTiledTest.tmx", EntityManager);
             tmxMapRenderer.Render();
-
-
         }
     }
 }
