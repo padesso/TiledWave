@@ -99,14 +99,15 @@ namespace TiledWaveEngineProject.TiledWave
 
             #region Tile Layers
 
-            //Tileset for user in drawing tiles on tile layers
+            //Tileset for user in drawing tiles on tile layers           
+            //for (int layerIndex = 0; layerIndex < _map.Layers.Count; layerIndex++)
             for (int layerIndex = _map.Layers.Count - 1; layerIndex >= 0; layerIndex--)
             {
                 if (!_map.Layers[layerIndex].Visible)
                     continue;
 
                 //Loop through the tiles and add them to the entity manager to be rendered
-                for (int tileIndex = _map.Layers[layerIndex].Tiles.Count - 1; tileIndex >= 0; tileIndex--)
+                for (int tileIndex = 0; tileIndex < _map.Layers[layerIndex].Tiles.Count; tileIndex++)
                 {   
                     //Get the clipped sprite from the tile sets
                     Sprite tileSetSprite = GetClippedSprite(layerIndex, tileIndex);
@@ -122,7 +123,7 @@ namespace TiledWaveEngineProject.TiledWave
                     tileEntity.AddComponent(tileSetSprite);
 
                     //Add the entity to the scene
-                    _entityManager.Add(tileEntity);               
+                    _entityManager.Add(tileEntity);                                       
                 }
             }
 
@@ -182,12 +183,11 @@ namespace TiledWaveEngineProject.TiledWave
 
             return null;
         }
-
-        
+      
         private Entity GetTileEntity(int LayerIndex, int TileIndex)
         {
             Transform2D rectTransform = new Transform2D();
-
+            
             if (_map.Orientation == TmxMap.OrientationType.Orthogonal) //Ortho is easy
             {
                 rectTransform = new Transform2D()
@@ -233,6 +233,8 @@ namespace TiledWaveEngineProject.TiledWave
                 throw new NotImplementedException();
             }
 
+            rectTransform.DrawOrder = GetTileDrawOrder(LayerIndex, TileIndex);
+
             //Create the renderable entity
             Entity currentEntity = new Entity()
                 .AddComponent(new RectangleCollider() //adding collision allows for off-screen culling as well
@@ -244,6 +246,17 @@ namespace TiledWaveEngineProject.TiledWave
 
             return currentEntity;
         }
+
+        //TODO: Figure out why some tiles are missing with multiple layers
+        private float GetTileDrawOrder(int LayerIndex, int TileIndex)
+        {
+            //Determine the draw order of the current sprite for all layers
+            float ceiling = (float)LayerIndex + 1.0f / (float)_map.Layers.Count;
+            float floor = (float)LayerIndex / (float)_map.Layers.Count;
+
+            return 1.0f - (floor + ((float)TileIndex / (float)_map.Layers[LayerIndex].Tiles.Count * (ceiling - floor)));
+        }
+
         #endregion
     }
 }

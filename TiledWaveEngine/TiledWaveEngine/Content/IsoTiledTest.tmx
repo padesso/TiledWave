@@ -12,4 +12,9 @@
   <object x="78" y="257" width="377" height="152"/>
   <object x="221" y="88" width="73" height="117"/>
  </objectgroup>
+ <layer name="Tile Layer 2" width="20" height="20">
+  <data encoding="base64" compression="zlib">
+   eJxjYBgFo4B+gBGKB6uZjGiYEsBEBfNYgZgXitHNYyHDPA4g5odidqiZLBS4j4EB04+Uhh+1zCHGjdQwF9l8apk3VAAANG8Agg==
+  </data>
+ </layer>
 </map>

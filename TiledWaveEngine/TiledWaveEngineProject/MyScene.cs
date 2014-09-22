@@ -22,7 +22,7 @@ namespace TiledWaveEngineProject
         {
             RenderManager.BackgroundColor = Color.CornflowerBlue;
 
-            TmxMapRenderer tmxMapRenderer = new TmxMapRenderer(@".\Content\StaggeredIsoTiledTest.tmx", EntityManager);
+            TmxMapRenderer tmxMapRenderer = new TmxMapRenderer(@".\Content\IsoTiledTest.tmx", EntityManager);
             tmxMapRenderer.Render();
         }
     }
